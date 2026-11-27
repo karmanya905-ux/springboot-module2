@@ -1,9 +1,12 @@
 package com.springbootwebtutorial.springbootwebtutorial.Controllers;
 import com.springbootwebtutorial.springbootwebtutorial.dto.EmployeeDTO;
+import com.springbootwebtutorial.springbootwebtutorial.enitities.EmployeeEntity;
+import com.springbootwebtutorial.springbootwebtutorial.repositories.EmployeeRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @RestController
 @RequestMapping(path = "/employees")
@@ -13,21 +16,30 @@ public class EmployeeController {
 //    public String getMySuperSecretMessage(){
 //        return "secret message : aukhif84hU*#$";
 //    }
+
+
+
+    private final EmployeeRepository employeeRepository;
+
+    public EmployeeController(EmployeeRepository employeeRepository) {
+        this.employeeRepository = employeeRepository;
+    }
+
+
     @GetMapping(path = "/{EmployeeId}")
-    public EmployeeDTO getEmployeeById(@PathVariable(name = "EmployeeId") Long id){
-        return new EmployeeDTO(id,"karmanya","karmanya905@gamil.com",21, LocalDate.of(2005,8,30),true);
+    public EmployeeEntity getEmployeeById(@PathVariable(name = "EmployeeId") Long id){
+        return employeeRepository.findById(id).orElse(null);
     }
 
     @GetMapping(path = "")
-    public String getAllEmployees(@RequestParam(required = false) Integer age,
-                                  @RequestParam(required = false) String sortBy){
-        return "hi age = " + age + sortBy;
+    public List<EmployeeEntity> getAllEmployees(@RequestParam(required = false) Integer age,
+                                                @RequestParam(required = false) String sortBy){
+        return employeeRepository.findAll();
     }
 
     @PostMapping
-    public EmployeeDTO createNewEmployee(@RequestBody EmployeeDTO inputEmployee){
-        inputEmployee.setId(100L);
-        return inputEmployee;
+    public EmployeeEntity createNewEmployee(@RequestBody EmployeeEntity inputEmployee){
+        return employeeRepository.save(inputEmployee);
     }
 
     @PutMapping
